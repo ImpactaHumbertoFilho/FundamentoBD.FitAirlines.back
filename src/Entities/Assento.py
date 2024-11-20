@@ -1,15 +1,18 @@
 from Entities.BaseModel import *
 from Entities.Classe import *
-from Entities.Voo import *
+from Entities.Aeronave import *
 
 class Assento(BaseModel):
     descricao = CharField(column_name='DESCRICAO', null=True)
-    id_assento = AutoField(column_name='ID_ASSENTO')
+    id_aeronave = ForeignKeyField(column_name='ID_AERONAVE', field='id_aeronave', model=Aeronave)
+    id_assento = IntegerField(column_name='ID_ASSENTO', unique=True)
     id_classe = ForeignKeyField(column_name='ID_CLASSE', field='id_classe', model=Classe)
-    id_voo = ForeignKeyField(column_name='ID_VOO', field='id_voo', model=Voo)
     localizacao = CharField(column_name='LOCALIZACAO', null=True)
     numero = CharField(column_name='NUMERO', null=True)
-    ocupado = IntegerField(column_name='OCUPADO', constraints=[SQL("DEFAULT 0")])
 
     class Meta:
         table_name = 'assento'
+        indexes = (
+            (('id_assento', 'id_classe', 'id_aeronave'), True),
+        )
+        primary_key = CompositeKey('id_aeronave', 'id_assento', 'id_classe')

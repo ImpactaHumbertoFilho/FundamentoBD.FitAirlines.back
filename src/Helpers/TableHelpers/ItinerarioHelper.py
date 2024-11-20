@@ -1,6 +1,8 @@
 import random
 from math import radians, sin, cos, sqrt, atan2
 
+from Helpers.porcentagemHelper import mostrar_barra_de_progresso
+
 from Entities.Itinerario import Itinerario
 
 # Fórmula de Haversine para calcular distância em km
@@ -16,8 +18,8 @@ def calcular_distancia(lat1, lon1, lat2, lon2):
 # Gerar itinerários com paradas como lista de códigos
 def gerar_itinerarios_realistas(aeroportos, qtd_itinerarios=20):
     itinerarios = []
-    
-    for _ in range(qtd_itinerarios):
+
+    for i in range(qtd_itinerarios):
         origem = random.choice(aeroportos)
         destino = random.choice(aeroportos)
         
@@ -41,4 +43,6 @@ def gerar_itinerarios_realistas(aeroportos, qtd_itinerarios=20):
 
             itinerarios.append(Itinerario(descricao = descricao, distancia_km = round(distancia_km, 2), duracao = round(duracao_horas), paradas = paradas))
     
+        mostrar_barra_de_progresso(i +1, qtd_itinerarios, 'carga de itinerarios.')
+        
     return itinerarios

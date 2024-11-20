@@ -16,7 +16,7 @@ SELECT * from assento a
 
 SELECT * from passageiro p 
 
-SELECT * from reserva r 
+select count(*) from reserva_de_assento_voo rdav 
 
 select * from tipo_pagamento tp
 
@@ -24,6 +24,9 @@ select * from pagamento p
 
 select * from ticket t
 
+select * from reserva_bagagem rb
+
+select * from bagagem b
 
 select 
 	v.CODIGO,
@@ -32,14 +35,17 @@ select
 	ta.CAPACIDADE_PASSAGEIROS,
 	v.ASSENTOS_DISPONIVEIS,
 	v.STATUS,
+	a.CODIGO,
 	ta.NOME,
 	i.PARADAS,
 	i.DISTANCIA_KM,
 	i.DESCRICAO 
 from 
 	voo v
+left join aeronave a 
+	on v.ID_AERONAVE = a.ID_AERONAVE 
 left join tipo_aeronave ta 
-	on v.ID_TIPO_AERONAVE = ta.ID_TIPO_AERONAVE 
+	on a.ID_TIPO_AERONAVE = ta.ID_TIPO_AERONAVE 
 left join voo_itinerario vi 
 	on vi.ID_VOO = v.ID_VOO
 left join itinerario i  
@@ -50,14 +56,14 @@ where
 SELECT count(*) from assento a
 
 select
-	sum(ta.CAPACIDADE_PASSAGEIROS)
+	*
 from 
 	voo v
+left join aeronave a 
+	on v.ID_AERONAVE = a.ID_AERONAVE 
 left join tipo_aeronave ta 
-	on v.ID_TIPO_AERONAVE = ta.ID_TIPO_AERONAVE 
-left join voo_itinerario vi 
-	on vi.ID_VOO = v.ID_VOO
-left join itinerario i  
-	on vi.ID_ITINERARIO = i.ID_ITINERARIO
+	on a.ID_TIPO_AERONAVE = ta.ID_TIPO_AERONAVE
+left join assento a2
+	on a2.ID_AERONAVE = a.ID_AERONAVE 
 
 

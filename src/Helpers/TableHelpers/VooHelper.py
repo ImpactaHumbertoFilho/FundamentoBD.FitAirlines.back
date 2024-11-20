@@ -1,15 +1,45 @@
 from Entities.VooItinerario import VooItinerario
 from Entities.Voo import Voo
 
+from peewee import fn
 import random
+
+from datetime import timedelta
 import datetime
 
-def gerar_voos_com_itinerarios(aeroportos, itinerarios, tipos_aeronave, inicio, fim):
+def calcular_preco_base(distancia, duracao, assentos_disponiveis):
+    # Fatores de cálculo
+    custo_por_km = 0.2  # Exemplo: custo por quilômetro
+    custo_por_passageiro = 50  # Custo adicional por passageiro na aeronave
+    duracao_extra = 10  # Valor adicional por hora de voo
+
+    # Cálculos de preço base
+    preco_base = (distancia * custo_por_km) + (assentos_disponiveis * custo_por_passageiro) + (duracao * duracao_extra)
+    
+    return preco_base
+
+def escolher_aeronave_disponivel(aeronaves, data_desejada):
+    # Filtrando aeronaves ativas e que não possuem voo agendado para o dia
+    aeronave_disponivel = None
+    while not aeronave_disponivel:
+        # Escolher uma aeronave aleatória
+        aeronave = random.choice(aeronaves)
+        
+        # Verificar se a aeronave está ativa e se não tem voo agendado para a data
+        if aeronave.status == 'ATIVA' and not Voo.select().where(
+            Voo.id_aeronave == aeronave.id_aeronave,
+            fn.DATE(Voo.partida) == data_desejada
+        ).exists():
+            aeronave_disponivel = aeronave
+            
+    return aeronave_disponivel
+
+def gerar_voos_com_itinerarios(aeroportos, itinerarios, aeronaves, inicio, fim):
     voos = []
     voo_itinerarios = []
-    status_opcoes = ["programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado","programado", "cancelado"]
+    status_opcoes = ["programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "programado", "cancelado"]
 
-    delta = datetime.timedelta(days=1)
+    delta = timedelta(days=1)
     codigo_voo = 1000
 
     i = 1
@@ -25,8 +55,8 @@ def gerar_voos_com_itinerarios(aeroportos, itinerarios, tipos_aeronave, inicio, 
             destino = [aero for aero in aeroportos if aero.codigo == itinerario.paradas[-1]][0]
 
             if origem.id_aeroporto != destino.id_aeroporto:
-                # Escolher aleatoriamente uma aeronave da lista de tipos
-                tipo_aeronave = random.choice(tipos_aeronave)
+                # Escolher aleatoriamente uma aeronave da lista de aeronaves
+                aeronave = escolher_aeronave_disponivel(aeronaves, inicio)
                 
                 partida_hora = datetime.datetime.combine(
                     inicio, datetime.time(random.randint(0, 23), random.randint(0, 59))
@@ -41,21 +71,22 @@ def gerar_voos_com_itinerarios(aeroportos, itinerarios, tipos_aeronave, inicio, 
                 else:
                     status = random.choice(status_opcoes)
                 
-                assentos_disponiveis = random.randint(0, tipo_aeronave.capacidade_passageiros)
+                assentos_disponiveis = random.randint(0, aeronave.id_tipo_aeronave.capacidade_passageiros)
 
                 # Criar objeto Voo
                 voo = Voo(
-                    id_voo = i,
-                    id_tipo_aeronave=tipo_aeronave.id_tipo_aeronave,  # Usando o ID da aeronave
+                    id_voo=i,
+                    id_aeronave=aeronave.id_aeronave,  # Usando o ID da aeronave diretamente
                     id_aeroporto_partida=origem.id_aeroporto,
                     id_aeroporto_chegada=destino.id_aeroporto,
-                    
                     codigo=f"V-{codigo_voo}",
                     partida=partida_hora,
                     chegada=chegada_hora,
                     duracao=round(duracao_horas, 2),
                     assentos_disponiveis=assentos_disponiveis,
-                    status=status
+                    status=status,
+
+                    preco_base = calcular_preco_base(itinerario.distancia_km, round(duracao_horas, 2), assentos_disponiveis)
                 )
 
                 # Criar objeto VooItinerario
@@ -66,7 +97,7 @@ def gerar_voos_com_itinerarios(aeroportos, itinerarios, tipos_aeronave, inicio, 
                 voo_itinerarios.append(voo_itinerario)
 
                 codigo_voo += 1
-                i +=1
+                i += 1
 
         inicio += delta
 

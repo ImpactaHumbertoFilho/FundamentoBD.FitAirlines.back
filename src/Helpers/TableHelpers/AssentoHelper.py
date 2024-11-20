@@ -1,31 +1,31 @@
 from Entities.Assento import Assento
+from Helpers.porcentagemHelper import mostrar_barra_de_progresso
 
 import random
 
-def gerar_assentos(voos, tipos_aeronave, classes):
+def gerar_assentos(aeronaves, tipos_aeronave, classes):
     """
-    Gera uma lista de assentos para cada voo.
+    Gera uma lista de assentos para cada aeronave.
 
-    :param voos: Lista de objetos da classe Voo.
+    :param aeronaves: Lista de objetos da classe Aeronave.
     :param tipos_aeronave: Lista de objetos da classe TipoAeronave.
     :param classes: Lista de objetos da classe Classe.
     :return: Lista de objetos Assento.
     """
     
-    print(f'gerando assentos...')
     assentos = []
 
-    for voo in voos:
-        # Encontrar o tipo de aeronave correspondente ao voo
+    i = 0
+    for aeronave in aeronaves:
+        # Encontrar o tipo de aeronave correspondente ao aeronave
         tipo_aeronave = next(
-            (ta for ta in tipos_aeronave if voo.id_tipo_aeronave.id_tipo_aeronave == ta.id_tipo_aeronave), None
+            (ta for ta in tipos_aeronave if aeronave.ID_TIPO_AERONAVE == ta.id_tipo_aeronave), None
         )
 
         if not tipo_aeronave:
-            continue  # Se não encontrar o tipo de aeronave, pula o voo
+            continue  # Se não encontrar o tipo de aeronave, pula o aeronave
 
         capacidade = tipo_aeronave.capacidade_passageiros
-        ocupados = capacidade - voo.assentos_disponiveis
 
         # Escolher uma classe aleatória para os assentos
         classe = random.choice(classes)
@@ -34,12 +34,13 @@ def gerar_assentos(voos, tipos_aeronave, classes):
             assento = Assento(
                 descricao= f"Assento {numero}",
                 id_classe= classe.id_classe,
-                id_voo= voo.id_voo,
+                id_aeronave= aeronave.id_aeronave,
                 localizacao= f"{'A' if numero % 2 == 0 else 'B'}{(numero - 1) // 6 + 1}",
                 numero= f"{numero:03}",
-                ocupado= 1 if numero <= ocupados else 0,
             )
             assentos.append(assento)
 
-    print(f'{len(assentos)} assentos gerados...')
+        i +=1
+        mostrar_barra_de_progresso(i, len(aeronaves), 'carga de assentos.')
+        
     return assentos
