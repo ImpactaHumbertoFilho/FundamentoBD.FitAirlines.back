@@ -1,6 +1,6 @@
 from Entities.BaseModel import *
-import Entities.Bagagem as Bagagem
-import Entities.ReservaDeAssentoVoo as ReservaDeAssentoVoo
+from Entities.Bagagem import Bagagem
+from Entities.ReservaDeAssentoVoo import ReservaDeAssentoVoo
 
 class ReservaBagagem(BaseModel):
     id_bagagem = ForeignKeyField(column_name='ID_BAGAGEM', field='id_bagagem', model=Bagagem)

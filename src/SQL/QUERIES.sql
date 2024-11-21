@@ -16,7 +16,7 @@ SELECT * from assento a
 
 SELECT * from passageiro p 
 
-select count(*) from reserva_de_assento_voo rdav 
+select * from reserva_de_assento_voo rdav 
 
 select * from tipo_pagamento tp
 
@@ -65,5 +65,3 @@ left join tipo_aeronave ta
 	on a.ID_TIPO_AERONAVE = ta.ID_TIPO_AERONAVE
 left join assento a2
 	on a2.ID_AERONAVE = a.ID_AERONAVE 
-
-

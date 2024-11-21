@@ -1,5 +1,5 @@
 from Entities.BaseModel import *
-import Entities.Voo as Voo
+from Entities.Voo import Voo
 
 class Relatorio(BaseModel):
     clima = CharField(column_name='CLIMA', null=True)

@@ -1,2 +1,3 @@
-INSERT INTO BAGAGEM (DESCRICAO, PRECO_BAGAGEM, PESO_MAXIMO) VALUES ('Bagagem de Mão', 0.00, 7.0);
-INSERT INTO BAGAGEM (DESCRICAO, PRECO_BAGAGEM, PESO_MAXIMO) VALUES ('Bagagem Despachada', 50.00, 23.0);
+INSERT INTO bagagem (dimensoes, peso_kg, preco_adicional, tipo_bagagem) VALUES
+('50x40x30 cm', 15.00, 50.00, 'DESPACHADA'),
+('30x20x15 cm', 7.50, 0.00, 'DE_MAO');
